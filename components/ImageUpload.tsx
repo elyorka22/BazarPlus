@@ -7,6 +7,7 @@ import { uploadImage } from '@/lib/imageUpload'
 interface ImageUploadProps {
   currentImage?: string | null
   onImageUploaded: (url: string | null) => void
+  onImageUploadStart?: () => void
   folder: 'products' | 'banners' | 'categories' | 'stores'
   userId?: string
   label?: string
@@ -16,6 +17,7 @@ interface ImageUploadProps {
 export function ImageUpload({
   currentImage,
   onImageUploaded,
+  onImageUploadStart,
   folder,
   userId,
   label = 'Rasm yuklash',
@@ -42,6 +44,9 @@ export function ImageUpload({
     }
 
     setUploading(true)
+    if (onImageUploadStart) {
+      onImageUploadStart()
+    }
 
     // Create preview
     const reader = new FileReader()

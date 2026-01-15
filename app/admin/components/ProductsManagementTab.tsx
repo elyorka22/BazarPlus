@@ -27,6 +27,7 @@ export function ProductsManagementTab() {
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [stores, setStores] = useState<Array<{ id: string; name: string }>>([])
+  const [imageUploading, setImageUploading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -346,12 +347,17 @@ export function ProductsManagementTab() {
               </div>
               <ImageUpload
                 currentImage={formData.image_url}
+                onImageUploadStart={() => {
+                  console.log('Image upload started')
+                  setImageUploading(true)
+                }}
                 onImageUploaded={(url) => {
                   console.log('Image uploaded, URL:', url)
                   console.log('Setting formData.image_url to:', url || '')
                   const newFormData = { ...formData, image_url: url || '' }
                   console.log('New formData:', newFormData)
                   setFormData(newFormData)
+                  setImageUploading(false)
                 }}
                 folder="products"
                 label="Mahsulot rasmi"
