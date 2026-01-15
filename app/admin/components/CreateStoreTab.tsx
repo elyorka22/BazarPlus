@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useUser } from '@/app/providers'
 import { Plus, Save, User, Mail } from 'lucide-react'
 
 interface User {
@@ -12,6 +13,7 @@ interface User {
 }
 
 export function CreateStoreTab() {
+  const { user: adminUser } = useUser() // Получить текущего админа
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
@@ -85,6 +87,25 @@ export function CreateStoreTab() {
         }
 
         ownerId = authData.user.id
+
+        // ВАЖНО: signUp автоматически логинит пользователя, нужно выйти и вернуть админа
+        // Сохранить ID админа
+        const adminId = adminUser?.id
+        
+        // Выйти из сессии созданного пользователя
+        await supabase.auth.signOut()
+        
+        // Подождать немного
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+        // Если админ был залогинен, нужно будет перелогиниться
+        // Но это лучше сделать через обновление страницы или явный релогин
+        // Пока просто предупредим пользователя
+        if (adminId) {
+          console.log('Store created. Admin needs to refresh page or login again.')
+          // Обновить страницу, чтобы админ мог залогиниться заново
+          // Но лучше не делать это автоматически, чтобы не потерять данные формы
+        }
 
         // Подождать немного, чтобы триггер создал профиль
         await new Promise(resolve => setTimeout(resolve, 1000))
