@@ -18,7 +18,7 @@ export default function LoginPage() {
     setError('')
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
@@ -26,9 +26,31 @@ export default function LoginPage() {
     if (error) {
       setError(error.message)
       setLoading(false)
-    } else {
-      router.push('/')
-      router.refresh()
+    } else if (data.user) {
+      // Получить роль пользователя и перенаправить на нужную страницу
+      try {
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single()
+
+        const role = profile?.role || 'client'
+
+        // Перенаправить на страницу в зависимости от роли
+        if (role === 'admin') {
+          router.push('/admin')
+        } else if (role === 'store') {
+          router.push('/store')
+        } else {
+          router.push('/client')
+        }
+        router.refresh()
+      } catch (profileError) {
+        // Если не удалось получить роль, перенаправить на главную
+        router.push('/')
+        router.refresh()
+      }
     }
   }
 
