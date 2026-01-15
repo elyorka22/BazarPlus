@@ -384,12 +384,24 @@ export default function ClientPage() {
                     key={product.id}
                     className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
                   >
-                    <div className="relative h-32 sm:h-48 bg-gradient-to-br from-primary-200 to-secondary-200 flex items-center justify-center">
-                      {product.image_url ? (
+                    <div className="relative h-32 sm:h-48 bg-gradient-to-br from-primary-200 to-secondary-200 flex items-center justify-center overflow-hidden">
+                      {product.image_url && product.image_url.trim() !== '' ? (
                         <img
                           src={product.image_url}
                           alt={product.name}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            console.error('Error loading image for product:', product.id, 'URL:', product.image_url)
+                            e.currentTarget.style.display = 'none'
+                            // Show fallback icon if image fails to load
+                            const parent = e.currentTarget.parentElement
+                            if (parent && !parent.querySelector('.fallback-icon')) {
+                              const fallback = document.createElement('div')
+                              fallback.className = 'fallback-icon text-4xl'
+                              fallback.textContent = '🛒'
+                              parent.appendChild(fallback)
+                            }
+                          }}
                         />
                       ) : (
                         <div className="text-4xl">🛒</div>
