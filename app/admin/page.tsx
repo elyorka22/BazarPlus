@@ -1,7 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/Navbar'
+import { useUser } from '@/app/providers'
+import { createClient } from '@/lib/supabase/client'
 import { Shield, Settings, Package, MessageSquare, Store } from 'lucide-react'
 import { SiteSettingsTab } from './components/SiteSettingsTab'
 import { ProductsManagementTab } from './components/ProductsManagementTab'
@@ -12,6 +15,69 @@ type TabType = 'settings' | 'products' | 'bot' | 'create-store'
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabType>('settings')
+  const { user, role, loading } = useUser()
+  const router = useRouter()
+
+  useEffect(() => {
+    // Проверить роль пользователя и перенаправить, если не админ
+    if (!loading) {
+      if (!user) {
+        // Пользователь не авторизован - перенаправить на логин
+        router.push('/auth/login')
+        return
+      }
+
+      // Проверить роль напрямую из базы данных
+      const checkAdminRole = async () => {
+        try {
+          const supabase = createClient()
+          const { data: profile, error } = await supabase
+            .from('user_profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+
+          if (error || !profile) {
+            router.push('/client')
+            return
+          }
+
+          const userRole = profile.role
+
+          if (userRole !== 'admin') {
+            // Пользователь не админ - перенаправить на соответствующую страницу
+            if (userRole === 'store') {
+              router.push('/store')
+            } else {
+              router.push('/client')
+            }
+          }
+        } catch (error) {
+          console.error('Error checking admin role:', error)
+          router.push('/client')
+        }
+      }
+
+      checkAdminRole()
+    }
+  }, [user, role, loading, router])
+
+  // Показать загрузку пока проверяем роль
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Yuklanmoqda...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Если пользователь не авторизован или не админ, не показывать страницу
+  if (!user || role !== 'admin') {
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">

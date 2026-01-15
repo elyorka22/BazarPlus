@@ -29,24 +29,41 @@ export default function LoginPage() {
     } else if (data.user) {
       // Получить роль пользователя и перенаправить на нужную страницу
       try {
-        const { data: profile } = await supabase
+        // Подождать немного, чтобы профиль точно создался
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+        const { data: profile, error: profileError } = await supabase
           .from('user_profiles')
           .select('role')
           .eq('id', data.user.id)
           .single()
 
-        const role = profile?.role || 'client'
+        if (profileError || !profile) {
+          console.error('Profile error:', profileError)
+          // Если профиль не найден, перенаправить на главную
+          router.push('/')
+          router.refresh()
+          return
+        }
+
+        const userRole = profile.role || 'client'
+        console.log('User role:', userRole) // Для отладки
 
         // Перенаправить на страницу в зависимости от роли
-        if (role === 'admin') {
+        if (userRole === 'admin') {
           router.push('/admin')
-        } else if (role === 'store') {
+        } else if (userRole === 'store') {
           router.push('/store')
         } else {
           router.push('/client')
         }
-        router.refresh()
+        
+        // Принудительно обновить страницу
+        setTimeout(() => {
+          window.location.href = userRole === 'admin' ? '/admin' : userRole === 'store' ? '/store' : '/client'
+        }, 100)
       } catch (profileError) {
+        console.error('Error fetching profile:', profileError)
         // Если не удалось получить роль, перенаправить на главную
         router.push('/')
         router.refresh()
