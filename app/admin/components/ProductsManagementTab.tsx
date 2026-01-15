@@ -130,6 +130,9 @@ export function ProductsManagementTab() {
         ? formData.image_url.trim() 
         : null
       
+      console.log('Form data image_url:', formData.image_url)
+      console.log('Processed imageUrl:', imageUrl)
+      
       const productData = {
         name: formData.name,
         description: formData.description,
@@ -141,6 +144,7 @@ export function ProductsManagementTab() {
       }
 
       console.log('Saving product with data:', productData)
+      console.log('Product data image_url:', productData.image_url)
 
       if (editingProduct) {
         const { data, error } = await supabase
@@ -169,6 +173,9 @@ export function ProductsManagementTab() {
         }
         
         console.log('Product created:', data)
+        if (data && data[0]) {
+          console.log('Created product image_url:', data[0].image_url)
+        }
       }
       
       setShowForm(false)
@@ -341,7 +348,10 @@ export function ProductsManagementTab() {
                 currentImage={formData.image_url}
                 onImageUploaded={(url) => {
                   console.log('Image uploaded, URL:', url)
-                  setFormData({ ...formData, image_url: url || '' })
+                  console.log('Setting formData.image_url to:', url || '')
+                  const newFormData = { ...formData, image_url: url || '' }
+                  console.log('New formData:', newFormData)
+                  setFormData(newFormData)
                 }}
                 folder="products"
                 label="Mahsulot rasmi"
