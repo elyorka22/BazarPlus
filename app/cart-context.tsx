@@ -61,7 +61,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
               quantity: item.quantity,
             }))
             setCart(items)
-            setCartCount(items.reduce((sum, item) => sum + item.quantity, 0))
+            setCartCount(items.reduce((sum: number, item) => sum + item.quantity, 0))
           } catch (e) {
             setCart([])
             setCartCount(0)
@@ -82,7 +82,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             quantity: item.quantity,
           }))
           setCart(items)
-          setCartCount(items.reduce((sum, item) => sum + item.quantity, 0))
+          setCartCount(items.reduce((sum: number, item) => sum + item.quantity, 0))
         } catch (e) {
           setCart([])
           setCartCount(0)
