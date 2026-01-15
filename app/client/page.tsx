@@ -155,49 +155,26 @@ export default function ClientPage() {
       const { data: { user } } = await supabase.auth.getUser()
       
       if (user) {
-        // Save to database for authenticated users (only if product is not mock)
-        if (!product.id.startsWith('mock_')) {
-          const existingItem = cart.find(item => item.product.id === product.id)
-          if (existingItem) {
-            await supabase
-              .from('cart_items')
-              .update({ quantity: existingItem.quantity + 1 })
-              .eq('user_id', user.id)
-              .eq('product_id', product.id)
-          } else {
-            await supabase
-              .from('cart_items')
-              .insert({
-                user_id: user.id,
-                product_id: product.id,
-                quantity: 1,
-              })
-          }
-          loadCart()
+        // Save to database for authenticated users
+        const existingItem = cart.find(item => item.product.id === product.id)
+        if (existingItem) {
+          await supabase
+            .from('cart_items')
+            .update({ quantity: existingItem.quantity + 1 })
+            .eq('user_id', user.id)
+            .eq('product_id', product.id)
         } else {
-          // For mock products, use localStorage
-          const existingItem = cart.find(item => item.product.id === product.id)
-          let newCart: CartItem[]
-          
-          if (existingItem) {
-            newCart = cart.map(item =>
-              item.product.id === product.id
-                ? { ...item, quantity: item.quantity + 1 }
-                : item
-            )
-          } else {
-            newCart = [...cart, { product, quantity: 1 }]
-          }
-          
-          setCart(newCart)
-          localStorage.setItem('guest_cart', JSON.stringify(
-            newCart.map(item => ({
-              product_id: item.product.id,
-              product: item.product,
-              quantity: item.quantity,
-            }))
-          ))
+          await supabase
+            .from('cart_items')
+            .insert({
+              user_id: user.id,
+              product_id: product.id,
+              quantity: 1,
+            })
         }
+        loadCart()
+        // Dispatch event to update cart in Navbar
+        window.dispatchEvent(new Event('cartUpdated'))
       } else {
         // Save to localStorage for guest users
         const existingItem = cart.find(item => item.product.id === product.id)
@@ -272,7 +249,7 @@ export default function ClientPage() {
       
       if (newQuantity <= 0) {
         // Remove from cart
-        if (user && !productId.startsWith('mock_')) {
+        if (user) {
           await supabase
             .from('cart_items')
             .delete()
