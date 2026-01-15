@@ -158,6 +158,7 @@ export function ProductsManagementTab() {
         if (error) {
           alert('Ошибка обновления товара: ' + error.message)
           console.error('Update error:', error)
+          setSubmitting(false)
           return
         }
         
@@ -171,6 +172,7 @@ export function ProductsManagementTab() {
         if (error) {
           alert('Ошибка создания товара: ' + error.message)
           console.error('Insert error:', error)
+          setSubmitting(false)
           return
         }
         
