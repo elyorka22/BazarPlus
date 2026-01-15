@@ -64,7 +64,7 @@ export function StatisticsTab() {
         .eq('store_id', store.id)
 
       const totalProducts = products?.length || 0
-      const activeProducts = products?.filter(p => p.is_active).length || 0
+      const activeProducts = products?.filter((p: { is_active: boolean }) => p.is_active).length || 0
 
       // Get orders with store products
       const { data: allOrders } = await supabase
@@ -136,7 +136,7 @@ export function StatisticsTab() {
         })
 
         const topProductsList = Object.values(productStats)
-          .sort((a, b) => b.revenue - a.revenue)
+          .sort((a: TopProduct, b: TopProduct) => b.revenue - a.revenue)
           .slice(0, 5)
 
         setStats({
