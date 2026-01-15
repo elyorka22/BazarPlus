@@ -59,15 +59,11 @@ export default function ClientPage() {
         }))
         setProducts(formatted)
       } else {
-        // Use mock data if no products in database
-        const { mockProducts } = await import('@/lib/mockData')
-        setProducts(mockProducts as any)
+        setProducts([])
       }
     } catch (error) {
       console.error('Error loading products:', error)
-      // Use mock data on error
-      const { mockProducts } = await import('@/lib/mockData')
-      setProducts(mockProducts as any)
+      setProducts([])
     } finally {
       setLoading(false)
     }
@@ -299,7 +295,7 @@ export default function ClientPage() {
         return
       }
       
-      if (user && !productId.startsWith('mock_')) {
+      if (user) {
         // Update in database for authenticated users
         await supabase
           .from('cart_items')
@@ -310,7 +306,7 @@ export default function ClientPage() {
         // Dispatch event to update cart in Navbar
         window.dispatchEvent(new Event('cartUpdated'))
       } else {
-        // Update in localStorage for guest users or mock products
+        // Update in localStorage for guest users
         const newCart = cart.map(item =>
           item.product.id === productId
             ? { ...item, quantity: newQuantity }
