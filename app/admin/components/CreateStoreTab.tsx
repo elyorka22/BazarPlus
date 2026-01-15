@@ -65,10 +65,12 @@ export function CreateStoreTab() {
         }
 
         // Создать пользователя в auth с метаданными для роли store
+        // Используем emailRedirectTo чтобы предотвратить автоматический вход
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: formData.owner_email,
           password: formData.owner_password,
           options: {
+            emailRedirectTo: `${window.location.origin}/auth/login`,
             data: {
               name: formData.owner_name,
               role: 'store',  // Передать роль в метаданных
