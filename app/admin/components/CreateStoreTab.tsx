@@ -64,10 +64,16 @@ export function CreateStoreTab() {
           return
         }
 
-        // Создать пользователя в auth
+        // Создать пользователя в auth с метаданными для роли store
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: formData.owner_email,
           password: formData.owner_password,
+          options: {
+            data: {
+              name: formData.owner_name,
+              role: 'store',  // Передать роль в метаданных
+            }
+          }
         })
 
         if (authError || !authData.user) {
@@ -78,20 +84,45 @@ export function CreateStoreTab() {
 
         ownerId = authData.user.id
 
-        // Создать профиль пользователя с ролью store
-        const { error: profileError } = await supabase
-          .from('user_profiles')
-          .insert({
-            id: ownerId,
-            email: formData.owner_email,
-            name: formData.owner_name,
-            role: 'store',
-          })
+        // Подождать немного, чтобы триггер создал профиль
+        await new Promise(resolve => setTimeout(resolve, 1000))
 
-        if (profileError) {
-          alert('Ошибка создания профиля: ' + profileError.message)
-          setSubmitting(false)
-          return
+        // Использовать функцию create_user_profile для гарантированного создания профиля с ролью store
+        const { error: functionError } = await supabase.rpc('create_user_profile', {
+          p_user_id: ownerId,
+          p_email: formData.owner_email,
+          p_name: formData.owner_name,
+          p_role: 'store',
+        })
+
+        if (functionError) {
+          // Fallback: попробовать обновить профиль напрямую
+          const { error: updateError } = await supabase
+            .from('user_profiles')
+            .update({
+              name: formData.owner_name,
+              role: 'store',
+              email: formData.owner_email,
+            })
+            .eq('id', ownerId)
+
+          if (updateError) {
+            // Если обновление не сработало, попробовать создать профиль
+            const { error: insertError } = await supabase
+              .from('user_profiles')
+              .insert({
+                id: ownerId,
+                email: formData.owner_email,
+                name: formData.owner_name,
+                role: 'store',
+              })
+
+            if (insertError) {
+              alert('Ошибка создания профиля: ' + insertError.message)
+              setSubmitting(false)
+              return
+            }
+          }
         }
       } else {
         // Использовать существующего пользователя
