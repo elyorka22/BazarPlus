@@ -5,14 +5,15 @@ import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/Navbar'
 import { useUser } from '@/app/providers'
 import { createClient } from '@/lib/supabase/client'
-import { Shield, Settings, Package, MessageSquare, Store, BarChart3 } from 'lucide-react'
+import { Shield, Settings, Package, MessageSquare, Store, BarChart3, ShoppingBag } from 'lucide-react'
 import { SiteSettingsTab } from './components/SiteSettingsTab'
 import { ProductsManagementTab } from './components/ProductsManagementTab'
 import { BotManagementTab } from './components/BotManagementTab'
 import { CreateStoreTab } from './components/CreateStoreTab'
 import { AdminStatisticsTab } from './components/AdminStatisticsTab'
+import { AdminOrdersTab } from './components/AdminOrdersTab'
 
-type TabType = 'statistics' | 'settings' | 'products' | 'bot' | 'create-store'
+type TabType = 'statistics' | 'settings' | 'products' | 'bot' | 'create-store' | 'orders'
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabType>('statistics')
@@ -145,6 +146,17 @@ export default function AdminPage() {
             <Store className="w-5 h-5" />
             Do'kon yaratish
           </button>
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${
+              activeTab === 'orders'
+                ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg'
+                : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
+            }`}
+          >
+            <ShoppingBag className="w-5 h-5" />
+            Buyurtmalar
+          </button>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg p-6">
@@ -153,6 +165,7 @@ export default function AdminPage() {
           {activeTab === 'products' && <ProductsManagementTab />}
           {activeTab === 'bot' && <BotManagementTab />}
           {activeTab === 'create-store' && <CreateStoreTab />}
+          {activeTab === 'orders' && <AdminOrdersTab />}
         </div>
       </div>
     </div>
