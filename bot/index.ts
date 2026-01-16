@@ -22,7 +22,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 // Main menu keyboard with reply buttons (can be hidden by user)
 const mainKeyboard = Markup.keyboard([
   ['🌐 Sayt haqida', '🏪 Sotuvchi bo\'lish'],
-  ['❌ Yopish'] // Кнопка для скрытия клавиатуры
+  ['📱 Chat ID'] // Кнопка для получения Chat ID
 ]).resize().oneTime() // oneTime - клавиатура исчезнет после одного нажатия
 
 // Inline keyboard buttons (disappear after clicking)
