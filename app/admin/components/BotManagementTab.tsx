@@ -232,7 +232,7 @@ export function BotManagementTab() {
         // Сохранить текст для кнопки "Sotuvchi bo'lish"
         // Разделить текст на title и content (первая строка - title, остальное - content)
         const lines = responseText.split('\n')
-        const title = lines[0] || 'Sotuvchi bo''lish'
+        const title = lines[0] || "Sotuvchi bo'lish"
         const content = lines.slice(1).join('\n').trim() || ''
 
         const { data: existing } = await supabase
