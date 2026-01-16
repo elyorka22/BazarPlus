@@ -457,13 +457,101 @@ export function ProductsManagementTab() {
                 </select>
               </div>
               <div>
+                <label className="block text-sm font-medium mb-2">Категория</label>
+                <select
+                  value={formData.category_id}
+                  onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                  className="w-full px-4 py-2 border rounded-lg"
+                >
+                  <option value="">Без категории</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Qanday sotiladi? *</label>
+                <select
+                  value={formData.sale_type}
+                  onChange={(e) => setFormData({ ...formData, sale_type: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border rounded-lg"
+                >
+                  <option value="by_kg">Kg bo'yicha</option>
+                  <option value="by_piece">Dona bo'yicha</option>
+                  <option value="by_package">Paket bo'yicha</option>
+                </select>
+              </div>
+
+              {formData.sale_type === 'by_package' && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">Paket turi</label>
+                  <select
+                    value={formData.package_type}
+                    onChange={(e) => setFormData({ ...formData, package_type: e.target.value })}
+                    className="w-full px-4 py-2 border rounded-lg"
+                  >
+                    <option value="">Tanlanmagan</option>
+                    <option value="1kg">1 kg</option>
+                    <option value="3kg">3 kg</option>
+                    <option value="5kg">5 kg</option>
+                    <option value="10kg">10 kg</option>
+                  </select>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Minimal buyurtma *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.min_order}
+                    onChange={(e) => setFormData({ ...formData, min_order: e.target.value })}
+                    required
+                    className="w-full px-4 py-2 border rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Maksimal buyurtma</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.max_order}
+                    onChange={(e) => setFormData({ ...formData, max_order: e.target.value })}
+                    className="w-full px-4 py-2 border rounded-lg"
+                    placeholder="Cheksiz"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Yorliq</label>
+                <select
+                  value={formData.badge}
+                  onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
+                  className="w-full px-4 py-2 border rounded-lg"
+                >
+                  <option value="">Yorliq yo'q</option>
+                  <option value="top">Top</option>
+                  <option value="discount">15%</option>
+                  <option value="recommended">Tavsiya etiladi</option>
+                </select>
+              </div>
+
+              <div>
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={formData.is_active}
                     onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                   />
-                  Активен
+                  Aktiv
                 </label>
               </div>
               <div className="flex gap-3">
