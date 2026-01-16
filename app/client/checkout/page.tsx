@@ -149,20 +149,17 @@ export default function CheckoutPage() {
           .eq('id', item.product.id)
       }
 
-      // Отправить уведомление магазинам через API
-      try {
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
-        await fetch(`${siteUrl}/api/notify-stores`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ orderId: order.id }),
-        })
-      } catch (error) {
+      // Отправить уведомление магазинам через API (не блокируем создание заказа)
+      fetch('/api/notify-stores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ orderId: order.id }),
+      }).catch((error) => {
         console.error('Error sending notification:', error)
         // Не блокируем создание заказа, если уведомление не отправилось
-      }
+      })
 
       if (user) {
         // Clear database cart for authenticated users
