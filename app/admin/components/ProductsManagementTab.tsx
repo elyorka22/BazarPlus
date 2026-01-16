@@ -336,9 +336,17 @@ export function ProductsManagementTab() {
                 <td className="px-4 py-3 font-bold">{product.price} so'm</td>
                 <td className="px-4 py-3">{product.stock}</td>
                 <td className="px-4 py-3">
-                  <span className={`px-2 py-1 rounded text-xs ${product.is_active ? 'bg-success-100 text-success-700' : 'bg-gray-100 text-gray-700'}`}>
-                    {product.is_active ? 'Активен' : 'Неактивен'}
-                  </span>
+                  <select
+                    value={product.is_active ? 'active' : 'inactive'}
+                    onChange={(e) => {
+                      const newStatus = e.target.value === 'active'
+                      updateProductStatus(product.id, newStatus)
+                    }}
+                    className="px-2 py-1 rounded text-xs border"
+                  >
+                    <option value="active">Активен</option>
+                    <option value="inactive">Неактивен</option>
+                  </select>
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex gap-2">
