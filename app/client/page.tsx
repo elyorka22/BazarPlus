@@ -347,7 +347,9 @@ export default function ClientPage() {
     }
   }
 
-  const filteredProducts = products.filter(p => {
+  // Используем useMemo для оптимизации фильтрации
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
     const matchesSearch = 
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.description.toLowerCase().includes(searchTerm.toLowerCase())
