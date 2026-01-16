@@ -350,14 +350,15 @@ export default function ClientPage() {
   // Используем useMemo для оптимизации фильтрации
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
-    const matchesSearch = 
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesCategory = selectedCategory === null || p.category_id === selectedCategory
-    
-    return matchesSearch && matchesCategory
-  })
+      const matchesSearch = 
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      
+      const matchesCategory = selectedCategory === null || p.category_id === selectedCategory
+      
+      return matchesSearch && matchesCategory
+    })
+  }, [products, searchTerm, selectedCategory])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
