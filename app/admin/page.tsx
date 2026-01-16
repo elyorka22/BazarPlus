@@ -84,82 +84,93 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent flex items-center gap-3">
-          <Shield className="w-10 h-10" />
-          Administrator paneli
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-8 bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent flex items-center gap-2 sm:gap-3">
+          <Shield className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
+          <span className="hidden sm:inline">Administrator paneli</span>
+          <span className="sm:hidden">Admin</span>
         </h1>
 
-        <div className="flex flex-wrap gap-4 mb-6">
+        {/* Mobile: Scrollable tabs */}
+        <div className="flex overflow-x-auto gap-2 sm:gap-4 mb-4 sm:mb-6 pb-2 sm:pb-0 scrollbar-hide -mx-2 sm:mx-0 px-2 sm:px-0">
           <button
             onClick={() => setActiveTab('statistics')}
-            className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${
+            className={`px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold text-xs sm:text-sm md:text-base transition flex items-center gap-1 sm:gap-2 whitespace-nowrap flex-shrink-0 ${
               activeTab === 'statistics'
                 ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg'
                 : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
             }`}
           >
-            <BarChart3 className="w-5 h-5" />
-            Statistika
+            <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Statistika</span>
+            <span className="sm:hidden">Stat</span>
           </button>
           <button
             onClick={() => setActiveTab('settings')}
-            className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${
+            className={`px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold text-xs sm:text-sm md:text-base transition flex items-center gap-1 sm:gap-2 whitespace-nowrap flex-shrink-0 ${
               activeTab === 'settings'
                 ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg'
                 : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
             }`}
           >
-            <Settings className="w-5 h-5" />
-            Sayt sozlamalari
+            <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden md:inline">Sayt sozlamalari</span>
+            <span className="hidden sm:inline md:hidden">Sozlamalar</span>
+            <span className="sm:hidden">Sozl</span>
           </button>
           <button
             onClick={() => setActiveTab('products')}
-            className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${
+            className={`px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold text-xs sm:text-sm md:text-base transition flex items-center gap-1 sm:gap-2 whitespace-nowrap flex-shrink-0 ${
               activeTab === 'products'
                 ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg'
                 : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
             }`}
           >
-            <Package className="w-5 h-5" />
-            Mahsulotlarni boshqarish
+            <Package className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden md:inline">Mahsulotlarni boshqarish</span>
+            <span className="hidden sm:inline md:hidden">Mahsulotlar</span>
+            <span className="sm:hidden">Mahs</span>
           </button>
           <button
             onClick={() => setActiveTab('bot')}
-            className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${
+            className={`px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold text-xs sm:text-sm md:text-base transition flex items-center gap-1 sm:gap-2 whitespace-nowrap flex-shrink-0 ${
               activeTab === 'bot'
                 ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg'
                 : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
             }`}
           >
-            <MessageSquare className="w-5 h-5" />
-            Botni boshqarish
+            <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Botni boshqarish</span>
+            <span className="sm:hidden">Bot</span>
           </button>
           <button
             onClick={() => setActiveTab('store-settings')}
-            className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${
+            className={`px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold text-xs sm:text-sm md:text-base transition flex items-center gap-1 sm:gap-2 whitespace-nowrap flex-shrink-0 ${
               activeTab === 'store-settings'
                 ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg'
                 : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
             }`}
           >
-            <Store className="w-5 h-5" />
-            Do'kon sozlamalari
+            <Store className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden md:inline">Do'kon sozlamalari</span>
+            <span className="hidden sm:inline md:hidden">Do'konlar</span>
+            <span className="sm:hidden">Do'kon</span>
           </button>
           <button
             onClick={() => setActiveTab('orders')}
-            className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${
+            className={`px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold text-xs sm:text-sm md:text-base transition flex items-center gap-1 sm:gap-2 whitespace-nowrap flex-shrink-0 ${
               activeTab === 'orders'
                 ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg'
                 : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
             }`}
           >
-            <ShoppingBag className="w-5 h-5" />
-            Buyurtmalar
+            <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Buyurtmalar</span>
+            <span className="sm:hidden">Buy</span>
           </button>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4 md:p-6">
           {activeTab === 'statistics' && <AdminStatisticsTab />}
           {activeTab === 'settings' && <SiteSettingsTab />}
           {activeTab === 'products' && <ProductsManagementTab />}

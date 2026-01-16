@@ -280,30 +280,32 @@ export function ProductsManagementTab() {
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <h2 className="text-2xl font-bold">Управление товарами</h2>
-        <div className="flex gap-3 w-full md:w-auto">
-          <div className="relative flex-1 md:flex-initial">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold">Управление товарами</h2>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:flex-initial">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
             <input
               type="text"
               placeholder="Поиск товаров..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border rounded-lg w-full md:w-64"
+              className="pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 border rounded-lg w-full sm:w-64 text-sm sm:text-base"
             />
           </div>
           <button
             onClick={() => openForm()}
-            className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-4 py-2 rounded-lg hover:opacity-90 transition flex items-center gap-2 whitespace-nowrap"
+            className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-4 py-2.5 sm:py-2 rounded-lg hover:opacity-90 transition flex items-center justify-center gap-2 whitespace-nowrap text-sm sm:text-base"
           >
-            <Plus className="w-5 h-5" />
-            Добавить товар
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Добавить товар</span>
+            <span className="sm:hidden">Добавить</span>
           </button>
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Desktop Table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white">
             <tr>
@@ -370,6 +372,63 @@ export function ProductsManagementTab() {
         </table>
       </div>
 
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {filteredProducts.map((product) => (
+          <div key={product.id} className="bg-white border rounded-lg p-4 shadow-sm">
+            <div className="flex gap-3 mb-3">
+              {product.image_url ? (
+                <img src={product.image_url} alt={product.name} className="w-20 h-20 object-cover rounded flex-shrink-0" />
+              ) : (
+                <div className="w-20 h-20 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
+                  <span className="text-2xl">📦</span>
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-base mb-1 line-clamp-2">{product.name}</h3>
+                <p className="text-xs text-gray-500 line-clamp-2 mb-2">{product.description}</p>
+                <p className="text-sm text-gray-600">Do'kon: {product.stores?.name || 'N/A'}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
+              <div>
+                <span className="text-gray-500">Narx:</span>
+                <span className="font-bold ml-1">{product.price} so'm</span>
+              </div>
+              <div>
+                <span className="text-gray-500">Qoldiq:</span>
+                <span className="font-semibold ml-1">{product.stock}</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <select
+                value={product.is_active ? 'active' : 'inactive'}
+                onChange={(e) => {
+                  const newStatus = e.target.value === 'active'
+                  updateProductStatus(product.id, newStatus)
+                }}
+                className="flex-1 px-2 py-2 rounded text-xs border"
+              >
+                <option value="active">Активен</option>
+                <option value="inactive">Неактивен</option>
+              </select>
+              <button
+                onClick={() => openForm(product)}
+                className="bg-secondary-500 text-white px-3 py-2 rounded text-sm hover:opacity-90 flex items-center justify-center"
+              >
+                <Edit className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => deleteProduct(product.id)}
+                className="bg-red-500 text-white px-3 py-2 rounded text-sm hover:opacity-90 flex items-center justify-center"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {filteredProducts.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-600">Товары не найдены</p>
@@ -378,10 +437,10 @@ export function ProductsManagementTab() {
 
       {/* Форма товара */}
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <h3 className="text-2xl font-bold mb-4">{editingProduct ? 'Изменить' : 'Добавить'} товар</h3>
-            <form onSubmit={saveProduct} className="space-y-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-xl shadow-xl p-4 sm:p-6 max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">{editingProduct ? 'Изменить' : 'Добавить'} товар</h3>
+            <form onSubmit={saveProduct} className="space-y-3 sm:space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Название *</label>
                 <input

@@ -171,26 +171,27 @@ export function AdminOrdersTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <ShoppingBag className="w-6 h-6" />
-          Barcha buyurtmalar
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+          <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="hidden sm:inline">Barcha buyurtmalar</span>
+          <span className="sm:hidden">Buyurtmalar</span>
         </h2>
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <div className="relative flex-1 md:flex-initial">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:flex-initial">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
             <input
               type="text"
               placeholder="Qidirish..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border rounded-lg w-full md:w-64"
+              className="pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 border rounded-lg w-full sm:w-64 text-sm sm:text-base"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border rounded-lg"
+            className="px-3 sm:px-4 py-2 sm:py-2.5 border rounded-lg text-sm sm:text-base"
           >
             <option value="all">Barcha holatlar</option>
             <option value="pending">Yangi</option>
@@ -210,17 +211,17 @@ export function AdminOrdersTab() {
       ) : (
         <div className="space-y-4">
           {filteredOrders.map((order) => (
-            <div key={order.id} className="border rounded-lg p-6 hover:shadow-md transition-shadow">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+            <div key={order.id} className="border rounded-lg p-3 sm:p-4 md:p-6 hover:shadow-md transition-shadow">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="font-bold text-lg">Buyurtma #{order.id.substring(0, 8)}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                    <span className="font-bold text-base sm:text-lg">Buyurtma #{order.id.substring(0, 8)}</span>
                     <div className="flex items-center gap-2">
                       {getStatusIcon(order.status)}
-                      <span className="font-semibold">{getStatusText(order.status)}</span>
+                      <span className="font-semibold text-sm sm:text-base">{getStatusText(order.status)}</span>
                     </div>
                   </div>
-                  <div className="text-sm text-gray-600 space-y-1">
+                  <div className="text-xs sm:text-sm text-gray-600 space-y-1">
                     <p>📅 {formatDate(order.created_at)}</p>
                     <p>💰 Jami: {new Intl.NumberFormat('uz-UZ').format(Math.round(order.total_amount))} so'm</p>
                     <p>📞 Telefon: {order.phone}</p>
@@ -230,12 +231,12 @@ export function AdminOrdersTab() {
                     )}
                   </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium">Holatni o'zgartirish:</label>
+                <div className="flex flex-col gap-2 w-full md:w-auto">
+                  <label className="text-xs sm:text-sm font-medium">Holatni o'zgartirish:</label>
                   <select
                     value={order.status}
                     onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                    className="px-4 py-2 border rounded-lg bg-white"
+                    className="px-3 sm:px-4 py-2 sm:py-2.5 border rounded-lg bg-white text-sm sm:text-base"
                   >
                     <option value="pending">Yangi</option>
                     <option value="processing">Tayyorlanmoqda</option>
