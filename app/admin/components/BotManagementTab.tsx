@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Edit, Trash2, Save, MessageSquare } from 'lucide-react'
+import { Edit, Save, MessageSquare } from 'lucide-react'
 
 interface BotSetting {
   id: string
@@ -121,58 +121,43 @@ export function BotManagementTab() {
     }
   }
 
-  function openButtonForm(button?: BotButton) {
-    if (button) {
-      setEditingButton(button)
-      setButtonForm({
-        text: button.text,
-        action: button.action || '',
-        order_index: button.order_index,
-        is_active: button.is_active,
-      })
-    } else {
-      setEditingButton(null)
-      setButtonForm({
-        text: '',
-        action: '',
-        order_index: botButtons.length,
-        is_active: true,
-      })
-    }
+  function openButtonForm(button: BotButton) {
+    setEditingButton(button)
+    setButtonForm({
+      text: button.text,
+      action: button.action || '',
+      order_index: button.order_index,
+      is_active: button.is_active,
+    })
     setShowButtonForm(true)
   }
 
   async function saveButton(e: React.FormEvent) {
     e.preventDefault()
+    if (!editingButton) return
+    
     try {
       const supabase = createClient()
       
-      if (editingButton) {
-        await supabase
-          .from('bot_buttons')
-          .update(buttonForm)
-          .eq('id', editingButton.id)
-      } else {
-        await supabase.from('bot_buttons').insert(buttonForm)
+      const { error } = await supabase
+        .from('bot_buttons')
+        .update({ text: buttonForm.text })
+        .eq('id', editingButton.id)
+
+      if (error) {
+        alert('Ошибка сохранения кнопки: ' + error.message)
+        return
       }
       
+      alert('Текст кнопки успешно обновлен!')
       setShowButtonForm(false)
       loadData()
     } catch (error) {
-      alert('Ошибка сохранения кнопки')
+      console.error('Error saving button:', error)
+      alert('Ошибка сохранения кнопки: ' + (error instanceof Error ? error.message : 'Неизвестная ошибка'))
     }
   }
 
-  async function deleteButton(id: string) {
-    if (!confirm('Удалить кнопку?')) return
-    try {
-      const supabase = createClient()
-      await supabase.from('bot_buttons').delete().eq('id', id)
-      loadData()
-    } catch (error) {
-      alert('Ошибка удаления кнопки')
-    }
-  }
 
   if (loading) {
     return (
@@ -210,15 +195,9 @@ export function BotManagementTab() {
 
       {/* Bot Buttons */}
       <div className="border-t pt-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-4">
           <h2 className="text-2xl font-bold">Кнопки бота</h2>
-          <button
-            onClick={() => openButtonForm()}
-            className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-4 py-2 rounded-lg hover:opacity-90 transition flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Добавить кнопку
-          </button>
+          <p className="text-sm text-gray-500 mt-1">Вы можете изменить текст существующих кнопок бота</p>
         </div>
 
         <div className="space-y-3">
@@ -242,13 +221,7 @@ export function BotManagementTab() {
                   className="bg-secondary-500 text-white px-3 py-1 rounded text-sm hover:opacity-90"
                 >
                   <Edit className="w-4 h-4 inline mr-1" />
-                  Изменить
-                </button>
-                <button
-                  onClick={() => deleteButton(button.id)}
-                  className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:opacity-90"
-                >
-                  <Trash2 className="w-4 h-4" />
+                  Изменить текст
                 </button>
               </div>
             </div>
@@ -257,16 +230,16 @@ export function BotManagementTab() {
 
         {botButtons.length === 0 && (
           <div className="text-center py-8 text-gray-500">
-            Нет кнопок. Добавьте первую кнопку.
+            Кнопки бота не найдены в базе данных.
           </div>
         )}
       </div>
 
-      {/* Форма кнопки */}
-      {showButtonForm && (
+      {/* Форма редактирования текста кнопки */}
+      {showButtonForm && editingButton && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full">
-            <h3 className="text-2xl font-bold mb-4">{editingButton ? 'Изменить' : 'Добавить'} кнопку</h3>
+            <h3 className="text-2xl font-bold mb-4">Изменить текст кнопки</h3>
             <form onSubmit={saveButton} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Текст кнопки *</label>
@@ -276,37 +249,11 @@ export function BotManagementTab() {
                   onChange={(e) => setButtonForm({ ...buttonForm, text: e.target.value })}
                   required
                   className="w-full px-4 py-2 border rounded-lg"
-                  placeholder="Например: Каталог товаров"
+                  placeholder="Введите новый текст кнопки"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Действие</label>
-                <input
-                  type="text"
-                  value={buttonForm.action}
-                  onChange={(e) => setButtonForm({ ...buttonForm, action: e.target.value })}
-                  className="w-full px-4 py-2 border rounded-lg"
-                  placeholder="Например: /catalog"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Порядок</label>
-                <input
-                  type="number"
-                  value={buttonForm.order_index}
-                  onChange={(e) => setButtonForm({ ...buttonForm, order_index: parseInt(e.target.value) })}
-                  className="w-full px-4 py-2 border rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={buttonForm.is_active}
-                    onChange={(e) => setButtonForm({ ...buttonForm, is_active: e.target.checked })}
-                  />
-                  Активна
-                </label>
+                <p className="text-xs text-gray-500 mt-1">
+                  Текущий текст: <span className="font-semibold">{editingButton.text}</span>
+                </p>
               </div>
               <div className="flex gap-3">
                 <button type="submit" className="flex-1 bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-2 rounded-lg font-semibold hover:opacity-90">
