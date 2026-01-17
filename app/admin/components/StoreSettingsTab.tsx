@@ -24,6 +24,10 @@ interface Store {
     name: string
     email: string
   }
+  credentials?: {
+    email: string
+    password: string
+  }
 }
 
 export function StoreSettingsTab() {
@@ -80,15 +84,27 @@ export function StoreSettingsTab() {
         `)
         .order('created_at', { ascending: false })
 
+      // Загрузить учетные данные магазинов
+      const { data: credentialsData } = await supabase
+        .from('store_credentials')
+        .select('store_id, email, password')
+
       if (storesData) {
-        const formattedStores = storesData.map((store: any) => ({
-          ...store,
-          status: store.status || 'active',
-          working_hours: store.working_hours || '',
-          delivery_radius: store.delivery_radius || 0,
-          delivery_price: store.delivery_price || 0,
-          owner: store.owner || { name: 'Noma\'lum', email: '' },
-        }))
+        const formattedStores = storesData.map((store: any) => {
+          const credentials = credentialsData?.find((c: any) => c.store_id === store.id)
+          return {
+            ...store,
+            status: store.status || 'active',
+            working_hours: store.working_hours || '',
+            delivery_radius: store.delivery_radius || 0,
+            delivery_price: store.delivery_price || 0,
+            owner: store.owner || { name: 'Noma\'lum', email: '' },
+            credentials: credentials ? {
+              email: credentials.email,
+              password: credentials.password
+            } : undefined,
+          }
+        })
         setStores(formattedStores)
       }
     } catch (error) {
@@ -218,7 +234,7 @@ export function StoreSettingsTab() {
       }
 
       // Создать магазин
-      const { error: storeError } = await supabase
+      const { data: newStore, error: storeError } = await supabase
         .from('stores')
         .insert({
           name: formData.store_name,
@@ -227,11 +243,30 @@ export function StoreSettingsTab() {
           delivery_radius: 0,
           delivery_price: 0,
         })
+        .select()
+        .single()
 
-      if (storeError) {
-        alert('Do\'kon yaratishda xatolik: ' + storeError.message)
+      if (storeError || !newStore) {
+        alert('Do\'kon yaratishda xatolik: ' + (storeError?.message || 'Noma\'lum xatolik'))
         setSubmitting(false)
         return
+      }
+
+      // Сохранить учетные данные, если создан новый пользователь
+      if (formData.create_new_user && newStore) {
+        const { error: credError } = await supabase
+          .from('store_credentials')
+          .insert({
+            store_id: newStore.id,
+            owner_id: ownerId,
+            email: formData.owner_email,
+            password: formData.owner_password,
+          })
+
+        if (credError) {
+          console.error('Error saving credentials:', credError)
+          // Не блокируем создание магазина, если не удалось сохранить пароль
+        }
       }
 
       alert('Do\'kon muvaffaqiyatli yaratildi!')
@@ -316,6 +351,15 @@ export function StoreSettingsTab() {
             <div className="space-y-2 text-sm text-gray-600 mb-4">
               <p>👤 Egasi: {store.owner.name}</p>
               <p>📧 Email: {store.owner.email}</p>
+              {store.credentials && (
+                <>
+                  <div className="border-t pt-2 mt-2">
+                    <p className="font-semibold text-gray-700 mb-1">Kirish ma'lumotlari:</p>
+                    <p>🔑 Login: <span className="font-mono text-xs">{store.credentials.email}</span></p>
+                    <p>🔐 Parol: <span className="font-mono text-xs">{store.credentials.password}</span></p>
+                  </div>
+                </>
+              )}
               {store.working_hours && (
                 <p>🕐 Ish vaqti: {store.working_hours}</p>
               )}
